@@ -88,15 +88,17 @@ function renderWeek() {
   renderSlots();
 }
 
-function renderSlots() {
+function renderSlots(fresh = true) {
   slotsEl.innerHTML = '';
+  slotsEl.classList.toggle('fresh', fresh);
   if (!state.date) {
     slotsEl.innerHTML = '<p class="slots-empty">Elige un día para ver las horas libres.</p>';
   } else {
-    HOURS.forEach((h) => {
+    HOURS.forEach((h, i) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'slot';
+      b.style.setProperty('--s', i);
       b.textContent = h;
       b.setAttribute('role', 'option');
       b.disabled = busy(state.date, h);
@@ -104,7 +106,7 @@ function renderSlots() {
       if (b.disabled) b.setAttribute('aria-label', h + ', ocupada');
       b.addEventListener('click', () => {
         state.time = h;
-        renderSlots();
+        renderSlots(false);
       });
       slotsEl.appendChild(b);
     });
@@ -181,3 +183,124 @@ function confirmBooking() {
 }
 
 renderWeek();
+
+// ============ Animaciones ============
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Titular palabra a palabra
+const h1 = document.querySelector('.hero h1');
+h1.setAttribute('aria-label', h1.textContent);
+h1.innerHTML = h1.textContent.trim().split(/\s+/)
+  .map((w, i) => `<span class="w" aria-hidden="true"><span style="--i:${i}">${w}</span></span>`)
+  .join(' ');
+
+const start = () => requestAnimationFrame(() => document.body.classList.add('is-loaded'));
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
+setTimeout(start, 1500);
+
+// Hojas de palmera dibujadas con líneas
+function frond(svg, seed) {
+  const pts = [];
+  const P0 = [110, 415], P1 = [96 + seed * 6, 220], P2 = [128, 12];
+  const at = (t) => [
+    (1 - t) ** 2 * P0[0] + 2 * (1 - t) * t * P1[0] + t * t * P2[0],
+    (1 - t) ** 2 * P0[1] + 2 * (1 - t) * t * P1[1] + t * t * P2[1],
+  ];
+  let d = `<path pathLength="1" style="--k:0" d="M${P0} Q${P1} ${P2}"/>`;
+  let k = 1;
+  for (let t = 0.18; t < 0.97; t += 0.055) {
+    const [x, y] = at(t);
+    const len = 92 * Math.sin(Math.PI * (t * 0.9 + 0.05)) * (1 - t * 0.25);
+    [-1, 1].forEach((side) => {
+      const ang = (side < 0 ? Math.PI : 0) + side * (-0.55 - t * 0.5);
+      const ex = x + Math.cos(ang) * len, ey = y + Math.sin(ang) * len * 0.8 - len * 0.35;
+      const cx = x + Math.cos(ang) * len * 0.45, cy = y - len * 0.42;
+      d += `<path pathLength="1" style="--k:${k++}" d="M${x.toFixed(1)},${y.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}"/>`;
+    });
+  }
+  svg.innerHTML = d;
+}
+document.querySelectorAll('[data-frond]').forEach((s, i) => frond(s, i));
+
+// Aparición al hacer scroll
+const groups = [
+  ['.about h2, .about-text p'], ['.facts li'], ['.section-head h2, .section-head p'], ['.topics li'],
+  ['.space-photo'], ['.space-text > h2, .space-text > p, .steps-title'], ['.steps li'], ['.addr'],
+  ['.review-track, .note'], ['.booking-intro > *'], ['.booker'], ['.faq h2'], ['.faq details'],
+  ['.contact-info > *'], ['.map'], ['.footer-inner > *'],
+];
+groups.forEach(([sel]) => document.querySelectorAll(sel).forEach((el, i) => {
+  el.classList.add('reveal');
+  el.style.setProperty('--d', i % 6);
+}));
+document.querySelectorAll('main section:not(.hero) h2').forEach((h) => h.classList.add('line-h'));
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    io.unobserve(e.target);
+    if (e.target.matches('[data-count]')) countUp(e.target);
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal, .line-h, [data-frond], [data-count]').forEach((el) => io.observe(el));
+
+// Contador de la valoración
+function countUp(el) {
+  const to = Number(el.dataset.count);
+  const t0 = performance.now();
+  const tick = (now) => {
+    const p = Math.min((now - t0) / 1400, 1);
+    el.textContent = (to * (1 - (1 - p) ** 3)).toFixed(1).replace('.', ',');
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// Reseñas en cinta continua
+const track = document.querySelector('.review-track');
+const rail = document.createElement('div');
+rail.className = 'rail';
+[...track.children].forEach((r) => rail.appendChild(r));
+[...rail.children].forEach((r) => {
+  const c = r.cloneNode(true);
+  c.setAttribute('aria-hidden', 'true');
+  rail.appendChild(c);
+});
+track.appendChild(rail);
+track.classList.add('auto');
+
+// Barra de progreso y parallax
+const hero = document.querySelector('.hero');
+const photo = document.querySelector('.space-photo');
+let ticking = false;
+function onFrame() {
+  ticking = false;
+  const y = window.scrollY;
+  const max = document.documentElement.scrollHeight - innerHeight;
+  header.style.setProperty('--sp', max > 0 ? (y / max).toFixed(4) : 0);
+  if (reduced) return;
+  if (y < innerHeight * 1.2) hero.style.setProperty('--py', `${(y * 0.18).toFixed(1)}px`);
+  const r = photo.getBoundingClientRect();
+  if (r.bottom > 0 && r.top < innerHeight) {
+    const p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+    photo.style.setProperty('--pp', `${(p * -40).toFixed(1)}px`);
+  }
+}
+window.addEventListener('scroll', () => {
+  if (!ticking) { ticking = true; requestAnimationFrame(onFrame); }
+}, { passive: true });
+onFrame();
+
+// El monograma y los anillos siguen al ratón
+if (!reduced && matchMedia('(pointer: fine)').matches) {
+  hero.addEventListener('pointermove', (e) => {
+    const b = hero.getBoundingClientRect();
+    hero.style.setProperty('--mx', ((e.clientX - b.left) / b.width * 2 - 1).toFixed(3));
+    hero.style.setProperty('--my', ((e.clientY - b.top) / b.height * 2 - 1).toFixed(3));
+  });
+  hero.addEventListener('pointerleave', () => {
+    hero.style.setProperty('--mx', 0);
+    hero.style.setProperty('--my', 0);
+  });
+}

@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..500&family=Jost:wght@300;400;500&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('js')</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -24,6 +25,7 @@
   </script>
 </head>
 <body>
+  <div class="grain" aria-hidden="true"></div>
   <a class="skip" href="#main">Saltar al contenido</a>
 
   <div class="demo-bar" role="note">
@@ -53,11 +55,13 @@
         </ul>
       </nav>
     </div>
+    <span class="scroll-bar" aria-hidden="true"></span>
   </header>
 
   <main id="main">
     <!-- HERO -->
     <section class="hero">
+      <div class="blobs" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
       <div class="wrap hero-grid">
         <div class="hero-copy">
           <p class="hero-sign">Sandra Villegas</p>
@@ -80,6 +84,8 @@
             <circle class="ring r1" cx="200" cy="200" r="190"/>
             <circle class="ring r2" cx="214" cy="196" r="150"/>
             <circle class="ring r3" cx="226" cy="190" r="104"/>
+            <circle class="ring r4" cx="200" cy="200" r="172"/>
+            <g class="orbit"><circle cx="200" cy="10" r="4.5"/></g>
             <circle class="dot" cx="226" cy="190" r="9"/>
           </svg>
           <span class="mono-bg" aria-hidden="true">SV</span>
@@ -93,6 +99,8 @@
 
     <!-- SOBRE MÍ -->
     <section class="about" id="sobre-mi">
+      <svg class="frond f-about" data-frond viewBox="0 0 220 420" aria-hidden="true"></svg>
+      <span class="blob b-about" aria-hidden="true"></span>
       <div class="wrap about-grid">
         <h2>Hola, soy Sandra.</h2>
         <div class="about-text">
@@ -109,6 +117,7 @@
 
     <!-- AYUDA -->
     <section class="help" id="ayuda">
+      <span class="blob b-help" aria-hidden="true"></span>
       <div class="wrap">
         <div class="section-head">
           <h2>En qué te puedo ayudar</h2>
@@ -125,8 +134,11 @@
       </div>
     </section>
 
+    <div class="marquee" aria-hidden="true"><div class="marquee-track"><div class="mq-set"><span class="mq-item">Ansiedad</span><i class="mq-dot"></i><span class="mq-item">Autoestima</span><i class="mq-dot"></i><span class="mq-item">Duelo</span><i class="mq-dot"></i><span class="mq-item">Relaciones</span><i class="mq-dot"></i><span class="mq-item">Gestión emocional</span><i class="mq-dot"></i><span class="mq-item">Estado de ánimo</span><i class="mq-dot"></i><span class="mq-item">Crecimiento personal</span><i class="mq-dot"></i></div><div class="mq-set"><span class="mq-item">Ansiedad</span><i class="mq-dot"></i><span class="mq-item">Autoestima</span><i class="mq-dot"></i><span class="mq-item">Duelo</span><i class="mq-dot"></i><span class="mq-item">Relaciones</span><i class="mq-dot"></i><span class="mq-item">Gestión emocional</span><i class="mq-dot"></i><span class="mq-item">Estado de ánimo</span><i class="mq-dot"></i><span class="mq-item">Crecimiento personal</span><i class="mq-dot"></i></div></div></div>
+
     <!-- CONSULTA -->
     <section class="space" id="consulta">
+      <svg class="frond f-space" data-frond viewBox="0 0 220 420" aria-hidden="true"></svg>
       <div class="wrap space-grid">
         <figure class="space-photo">
           <img src="assets/consulta.jpg" alt="Consulta de Sandra Villegas: sofá beige con cojines verdes, plantas y luz natural" width="382" height="510" loading="lazy">
@@ -153,7 +165,7 @@
       <div class="wrap">
         <div class="section-head">
           <h2>Lo que dicen quienes han venido</h2>
-          <p class="score"><strong>5,0</strong> de media en Google con 24 reseñas.</p>
+          <p class="score"><strong data-count="5">5,0</strong> de media en Google con 24 reseñas.</p>
         </div>
         <div class="review-track" tabindex="0" aria-label="Opiniones de pacientes">
           <blockquote class="review"><p>Desde la primera sesión me sentí escuchada. Sandra tiene una calma que se contagia y me ha dado herramientas que uso cada día para la ansiedad.</p><footer>Laura M.</footer></blockquote>
@@ -168,6 +180,8 @@
 
     <!-- CITA -->
     <section class="booking" id="cita">
+      <svg class="deco-rings" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="190"/><circle cx="214" cy="196" r="150"/><circle cx="226" cy="190" r="104"/><circle class="dash" cx="200" cy="200" r="172"/></svg>
+      <span class="blob b-book" aria-hidden="true"></span>
       <div class="wrap booking-grid">
         <div class="booking-intro">
           <h2>Pide tu cita</h2>
@@ -264,6 +278,7 @@
 
     <!-- CONTACTO -->
     <section class="contact" id="contacto">
+      <svg class="frond f-contact" data-frond viewBox="0 0 220 420" aria-hidden="true"></svg>
       <div class="wrap contact-grid">
         <div class="contact-info">
           <h2>Dónde estoy</h2>
